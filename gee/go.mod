@@ -1,3 +1,3 @@
-module github.com/wisprell/GeeRPC/gee
+module gee
 
 go 1.17
