@@ -15,7 +15,7 @@ import (
 	"net/http"
 	"time"
 
-	"gee"
+	"gee_web"
 )
 
 type student struct {
@@ -29,7 +29,7 @@ func FormatAsDate(t time.Time) string {
 }
 
 func main() {
-	r := gee.Default()
+	r := gee_web.Default()
 	r.SetFuncMap(template.FuncMap{
 		"FormatAsDate": FormatAsDate,
 	})
@@ -38,25 +38,25 @@ func main() {
 
 	stu1 := &student{Name: "Geektutu", Age: 20}
 	stu2 := &student{Name: "Jack", Age: 22}
-	r.GET("/", func(c *gee.Context) {
+	r.GET("/", func(c *gee_web.Context) {
 		c.HTML(http.StatusOK, "css.tmpl", nil)
 	})
-	r.GET("/students", func(c *gee.Context) {
-		c.HTML(http.StatusOK, "arr.tmpl", gee.H{
+	r.GET("/students", func(c *gee_web.Context) {
+		c.HTML(http.StatusOK, "arr.tmpl", gee_web.H{
 			"title":  "gee",
 			"stuArr": [2]*student{stu1, stu2},
 		})
 	})
 
-	r.GET("/date", func(c *gee.Context) {
-		c.HTML(http.StatusOK, "custom_func.tmpl", gee.H{
+	r.GET("/date", func(c *gee_web.Context) {
+		c.HTML(http.StatusOK, "custom_func.tmpl", gee_web.H{
 			"title": "gee",
 			"now":   time.Date(2019, 8, 17, 0, 0, 0, 0, time.UTC),
 		})
 	})
 
 	// index out of range for testing Recovery()
-	r.GET("/panic", func(c *gee.Context) {
+	r.GET("/panic", func(c *gee_web.Context) {
 		names := []string{"geektutu"}
 		c.String(http.StatusOK, names[100])
 	})

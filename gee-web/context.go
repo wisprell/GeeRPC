@@ -1,4 +1,4 @@
-package gee
+package gee_web
 
 import (
 	"encoding/json"
