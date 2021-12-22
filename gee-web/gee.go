@@ -1,4 +1,4 @@
-// Package gee
+// Package gee_web
 /*
 gee框架的设计以及API均参考了gin。
 使用New()创建 gee 的实例，使用 GET()方法添加路由，最后使用Run()启动Web服务。

@@ -1,3 +1,3 @@
-module github.com/wisprell/GeeRPC/gee-cache
+module gee-cache
 
 go 1.17

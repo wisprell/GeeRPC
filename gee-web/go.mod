@@ -1,3 +1,3 @@
-module gee
+module gee_web
 
 go 1.17
