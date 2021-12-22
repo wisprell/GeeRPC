@@ -95,3 +95,8 @@ func (ctx *Context) Next()  {
 		ctx.handlers[ctx.index](ctx)
 	}
 }
+
+func (ctx *Context) Fail(code int, err string) {
+	ctx.index = len(ctx.handlers)
+	ctx.JSON(code, H{"message": err})
+}
