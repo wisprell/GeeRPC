@@ -1,6 +1,6 @@
 package gee_cache
 import (
-	"gee-cache/lru"
+	"gee_cache/lru"
 	"sync"
 )
 

@@ -11,55 +11,79 @@ package main
 
 import (
 	"fmt"
-	"html/template"
+	"log"
 	"net/http"
-	"time"
 
-	"gee_web"
+	"gee_cache"
 )
 
-type student struct {
-	Name string
-	Age  int8
-}
+// gee-web测试
+//type student struct {
+//	Name string
+//	Age  int8
+//}
+//
+//func FormatAsDate(t time.Time) string {
+//	year, month, day := t.Date()
+//	return fmt.Sprintf("%d-%02d-%02d", year, month, day)
+//}
+//
+//func main() {
+//	r := gee_web.Default()
+//	r.SetFuncMap(template.FuncMap{
+//		"FormatAsDate": FormatAsDate,
+//	})
+//	r.LoadHTMLGlob("templates/*")
+//	r.Static("/assets", "./static")
+//
+//	stu1 := &student{Name: "Geektutu", Age: 20}
+//	stu2 := &student{Name: "Jack", Age: 22}
+//	r.GET("/", func(c *gee_web.Context) {
+//		c.HTML(http.StatusOK, "css.tmpl", nil)
+//	})
+//	r.GET("/students", func(c *gee_web.Context) {
+//		c.HTML(http.StatusOK, "arr.tmpl", gee_web.H{
+//			"title":  "gee",
+//			"stuArr": [2]*student{stu1, stu2},
+//		})
+//	})
+//
+//	r.GET("/date", func(c *gee_web.Context) {
+//		c.HTML(http.StatusOK, "custom_func.tmpl", gee_web.H{
+//			"title": "gee",
+//			"now":   time.Date(2019, 8, 17, 0, 0, 0, 0, time.UTC),
+//		})
+//	})
+//
+//	// index out of range for testing Recovery()
+//	r.GET("/panic", func(c *gee_web.Context) {
+//		names := []string{"geektutu"}
+//		c.String(http.StatusOK, names[100])
+//	})
+//
+//	r.Run(":9999")
+//}
 
-func FormatAsDate(t time.Time) string {
-	year, month, day := t.Date()
-	return fmt.Sprintf("%d-%02d-%02d", year, month, day)
+
+// gee-cache 测试
+var db = map[string]string{
+	"Tom":  "630",
+	"Jack": "589",
+	"Sam":  "567",
 }
 
 func main() {
-	r := gee_web.Default()
-	r.SetFuncMap(template.FuncMap{
-		"FormatAsDate": FormatAsDate,
-	})
-	r.LoadHTMLGlob("templates/*")
-	r.Static("/assets", "./static")
+	gee_cache.NewGroup("scores", 2<<10, gee_cache.GetterFunc(
+		func(key string) ([]byte, error) {
+			log.Println("[SlowDB] search key", key)
+			if v, ok := db[key]; ok {
+				return []byte(v), nil
+			}
+			return nil, fmt.Errorf("%s not exist", key)
+		}))
 
-	stu1 := &student{Name: "Geektutu", Age: 20}
-	stu2 := &student{Name: "Jack", Age: 22}
-	r.GET("/", func(c *gee_web.Context) {
-		c.HTML(http.StatusOK, "css.tmpl", nil)
-	})
-	r.GET("/students", func(c *gee_web.Context) {
-		c.HTML(http.StatusOK, "arr.tmpl", gee_web.H{
-			"title":  "gee",
-			"stuArr": [2]*student{stu1, stu2},
-		})
-	})
-
-	r.GET("/date", func(c *gee_web.Context) {
-		c.HTML(http.StatusOK, "custom_func.tmpl", gee_web.H{
-			"title": "gee",
-			"now":   time.Date(2019, 8, 17, 0, 0, 0, 0, time.UTC),
-		})
-	})
-
-	// index out of range for testing Recovery()
-	r.GET("/panic", func(c *gee_web.Context) {
-		names := []string{"geektutu"}
-		c.String(http.StatusOK, names[100])
-	})
-
-	r.Run(":9999")
+	addr := "localhost:9999"
+	peers := gee_cache.NewHTTPPool(addr)
+	log.Println("geecache is running at", addr)
+	log.Fatal(http.ListenAndServe(addr, peers))
 }

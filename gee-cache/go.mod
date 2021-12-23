@@ -1,3 +1,3 @@
-module gee-cache
+module gee_cache
 
 go 1.17
